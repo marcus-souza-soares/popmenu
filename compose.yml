@@ -1,0 +1,38 @@
+services:
+  db:
+    image: postgres:16.4
+    volumes:
+      - postgresql_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_USER: postgres
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "5430:5432"
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    stdin_open: true
+    tty: true
+    command: ./bin/dev
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+      - bundle_data:/usr/local/bundle
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - redis-volume:/var/lib/redis/data
+    ports:
+      - '6379:6379'
+
+volumes:
+  bundle_data:
+  postgresql_data:
+  redis-volume:
