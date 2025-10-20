@@ -18,6 +18,8 @@ services:
     command: ./bin/dev
     env_file:
       - .env
+    environment:
+      - RAILS_ENV=development
     volumes:
       - .:/app
       - bundle_data:/usr/local/bundle
