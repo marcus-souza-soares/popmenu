@@ -1,4 +1,8 @@
 FactoryBot.define do
+  factory :menu do
+    name { "Sample Menu" }
+  end
+
   factory :sushi_menu do
     name { "Sushi Menu" }
   end

@@ -62,7 +62,15 @@ class MenusController < ApplicationController
 
   private
     def set_menu
-      @menu = Menu.find(params.expect(:id))
+      @menu = Menu.find_by(id: params.expect(:id))
+
+      if @menu.blank?
+        if request.format.json?
+          render json: { error: "Menu not found" }, status: :not_found
+        else
+          redirect_to menus_path, alert: "Menu not found", status: :not_found
+        end
+      end
     end
 
     def menu_params
