@@ -2,9 +2,10 @@
 
 <div class="md:w-2/3 w-full">
   <h1 class="font-bold text-4xl">Editing menu item</h1>
+  <p class="text-gray-600 mb-4"><%= @restaurant.name %> - <%= @menu.name %></p>
 
   <%= render "form", menu_item: @menu_item %>
 
-  <%= link_to "Show this menu item", [@menu_item.menu, @menu_item], class: "w-full sm:w-auto text-center mt-2 sm:mt-0 sm:ml-2 rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
-  <%= link_to "Back to menu items",  menu_menu_items_path, class: "w-full sm:w-auto text-center mt-2 sm:mt-0 sm:ml-2 rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
+  <%= link_to "Show this menu item", restaurant_menu_menu_item_path(@restaurant, @menu, @menu_item), class: "w-full sm:w-auto text-center mt-2 sm:mt-0 sm:ml-2 rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
+  <%= link_to "Back to menu items", restaurant_menu_menu_items_path(@restaurant, @menu), class: "w-full sm:w-auto text-center mt-2 sm:mt-0 sm:ml-2 rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
 </div>

@@ -6,8 +6,8 @@
   <% end %>
 
   <div class="flex justify-between items-center">
-    <h1 class="font-bold text-4xl">Menus</h1>
-    <%= link_to "New menu", new_menu_path, class: "rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white block font-medium" %>
+    <h1 class="font-bold text-4xl">Menus for <%= @restaurant.name %></h1>
+    <%= link_to "New menu", new_restaurant_menu_path(@restaurant), class: "rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white block font-medium" %>
   </div>
 
   <div id="menus" class="min-w-full divide-y divide-gray-200 space-y-5">
@@ -16,9 +16,10 @@
         <div class="flex flex-col sm:flex-row justify-between items-center pb-5 sm:pb-0">
           <%= render menu %>
           <div class="w-full sm:w-auto flex flex-col sm:flex-row space-x-2 space-y-2">
-            <%= link_to "Show", menu, class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
-            <%= link_to "Edit", edit_menu_path(menu), class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
-            <%= button_to "Destroy", menu, method: :delete, class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 text-white bg-red-600 hover:bg-red-500 font-medium cursor-pointer", data: { turbo_confirm: "Are you sure?" } %>
+            <%= link_to "Show", restaurant_menu_path(@restaurant, menu), class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
+            <%= link_to "Menu Items", restaurant_menu_menu_items_path(@restaurant, menu), class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-green-100 hover:bg-green-50 inline-block font-medium" %>
+            <%= link_to "Edit", edit_restaurant_menu_path(@restaurant, menu), class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
+            <%= button_to "Destroy", restaurant_menu_path(@restaurant, menu), method: :delete, class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 text-white bg-red-600 hover:bg-red-500 font-medium cursor-pointer", data: { turbo_confirm: "Are you sure?" } %>
           </div>
         </div>
       <% end %>
@@ -26,4 +27,6 @@
       <p class="text-center my-10">No menus found.</p>
     <% end %>
   </div>
+
+  <%= link_to "Back to restaurant", restaurant_path(@restaurant), class: "mt-4 rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
 </div>

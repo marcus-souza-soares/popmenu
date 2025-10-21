@@ -3,6 +3,9 @@ require 'rails_helper'
 RSpec.describe MenusController, type: :controller do
   render_views
 
+  let(:restaurant) { create(:restaurant) }
+  let(:menu) { create(:menu, restaurant: restaurant) }
+
   let(:valid_attributes) {
     { name: "Test Menu" }
   }
@@ -14,41 +17,46 @@ RSpec.describe MenusController, type: :controller do
   let(:json_response) { JSON.parse(response.body) }
 
   describe "GET #index" do
-    let(:action) { -> { get :index, format: :json } }
+    let(:action) { -> { get :index, params: { restaurant_id: restaurant.id }, format: :json } }
 
     context "JSON response" do
       it "returns a success response" do
-        create(:menu)
+        create(:menu, restaurant: restaurant)
         action.call
 
         expect(response).to be_successful
       end
 
-      it "returns all menus" do
-        menu1 = create(:menu, name: "Lunch Menu")
-        menu2 = create(:menu, name: "Dinner Menu")
+      it "returns only menus for the specific restaurant" do
+        other_restaurant = create(:restaurant)
+        menu1 = create(:menu, restaurant: restaurant, name: "Menu 1")
+        menu2 = create(:menu, restaurant: restaurant, name: "Menu 2")
+        other_menu = create(:menu, restaurant: other_restaurant, name: "Other Menu")
 
         action.call
 
         expect(json_response.length).to eq(2)
-        expect(json_response.map { |m| m["name"] }).to contain_exactly("Lunch Menu", "Dinner Menu")
+        expect(json_response.map { |m| m["name"] }).to contain_exactly("Menu 1", "Menu 2")
       end
 
-      it "returns correct menu attributes" do
-        menu = create(:menu, name: "Breakfast Menu")
+      it "includes menu items in menu data" do
+        menu = create(:menu, restaurant: restaurant)
+        menu_item1 = create(:menu_item, name: "Item 1", price_in_cents: 1299)
+        menu_item2 = create(:menu_item, name: "Item 2", price_in_cents: 999)
+        MenuAssignment.create!(menu: menu, menu_item: menu_item1)
+        MenuAssignment.create!(menu: menu, menu_item: menu_item2)
 
         action.call
 
         first_menu = json_response.first
-        expect(first_menu["name"]).to eq("Breakfast Menu")
-        expect(first_menu["id"]).to eq(menu.id)
+        expect(first_menu["menu_items"].length).to eq(2)
+        expect(first_menu["menu_items"].map { |mi| mi["name"] }).to contain_exactly("Item 1", "Item 2")
       end
     end
   end
 
   describe "GET #show" do
-    let(:menu) { create(:menu) }
-    let(:action) { -> { get :show, params: { id: menu.id }, format: :json } }
+    let(:action) { -> { get :show, params: { restaurant_id: restaurant.id, id: menu.id }, format: :json } }
 
     context "JSON response" do
       it "returns a success response" do
@@ -64,15 +72,30 @@ RSpec.describe MenusController, type: :controller do
         expect(json_response["name"]).to eq(menu.name)
       end
 
-      it "returns 404 for non-existent menu" do
-        get :show, params: { id: Float::INFINITY }, format: :json
-        expect(response).to have_http_status(:not_found)
+      it "includes menu items in the response" do
+        menu_item = create(:menu_item, name: "Special Item", price_in_cents: 1599)
+        MenuAssignment.create!(menu: menu, menu_item: menu_item)
+
+        action.call
+
+        expect(json_response["menu_items"]).to be_present
+        expect(json_response["menu_items"].first["name"]).to eq("Special Item")
+      end
+
+      context "when the menu belongs to a different restaurant" do
+        let(:other_restaurant) { create(:restaurant) }
+        let(:menu) { create(:menu, restaurant: other_restaurant) }
+
+        it "returns 404" do
+          action.call
+          expect(response).to have_http_status(:not_found)
+        end
       end
     end
   end
 
   describe "POST #create" do
-    let(:action) { -> { post :create, params: { menu: attributes }, format: :json } }
+    let(:action) { -> { post :create, params: { restaurant_id: restaurant.id, menu: attributes }, format: :json } }
     let(:attributes) { nil }
 
     context "with valid params" do
@@ -82,6 +105,11 @@ RSpec.describe MenusController, type: :controller do
         expect {
           action.call
         }.to change(Menu, :count).by(1)
+      end
+
+      it "creates a menu associated with the restaurant" do
+        action.call
+        expect(Menu.last.restaurant).to eq(restaurant)
       end
 
       it "returns a 201 created status" do
@@ -94,13 +122,6 @@ RSpec.describe MenusController, type: :controller do
 
         expect(json_response["name"]).to eq("Test Menu")
         expect(json_response["id"]).to be_present
-      end
-
-      it "creates a menu with the correct attributes" do
-        action.call
-
-        created_menu = Menu.last
-        expect(created_menu.name).to eq("Test Menu")
       end
     end
 
@@ -127,13 +148,12 @@ RSpec.describe MenusController, type: :controller do
   end
 
   describe "PUT #update" do
-    let(:menu) { create(:menu, name: "Original Name") }
     let(:new_attributes) {
       { name: "Updated Menu Name" }
     }
     let(:action) { -> { put :update, params: params, format: :json } }
     let(:attributes) { new_attributes }
-    let(:params) { { id: menu.id, menu: attributes } }
+    let(:params) { { restaurant_id: restaurant.id, id: menu.id, menu: attributes } }
 
     context "with valid params" do
       it "updates the requested menu" do
@@ -177,10 +197,11 @@ RSpec.describe MenusController, type: :controller do
       end
     end
 
-    context "non-existent menu" do
-      let(:params) { { id: Float::INFINITY, menu: attributes } }
+    context "scoping" do
+      let(:other_restaurant) { create(:restaurant) }
+      let(:menu) { create(:menu, restaurant: other_restaurant) }
 
-      it "returns 404" do
+      it "prevents updating menus from other restaurants" do
         action.call
         expect(response).to have_http_status(:not_found)
       end
@@ -188,9 +209,8 @@ RSpec.describe MenusController, type: :controller do
   end
 
   describe "DELETE #destroy" do
-    let(:menu) { create(:menu) }
     let(:action) { -> { delete :destroy, params: params, format: :json } }
-    let(:params) { { id: menu.id } }
+    let(:params) { { restaurant_id: restaurant.id, id: menu.id } }
 
     it "destroys the requested menu" do
       menu
@@ -210,30 +230,23 @@ RSpec.describe MenusController, type: :controller do
     end
 
     context "when menu has menu items" do
-      it "destroys the menu and its associated menu items" do
-        create(:menu_item, menu: menu)
-        create(:menu_item, name: "Other Menu Item", menu: menu)
+      it "destroys the menu and menu assignments but keeps menu items" do
+        menu_item = create(:menu_item)
+        MenuAssignment.create!(menu: menu, menu_item: menu_item)
 
         expect {
           action.call
         }.to change(Menu, :count).by(-1)
-         .and change(MenuItem, :count).by(-2)
+         .and change(MenuAssignment, :count).by(-1)
+         .and change(MenuItem, :count).by(0) # Menu items are preserved
       end
     end
 
-    context "when destruction fails" do
-      it "returns a 422 unprocessable entity status" do
-        allow_any_instance_of(Menu).to receive(:destroy).and_return(false)
+    context "scoping" do
+      let(:other_restaurant) { create(:restaurant) }
+      let(:menu) { create(:menu, restaurant: other_restaurant) }
 
-        action.call
-        expect(response).to have_http_status(:unprocessable_entity)
-      end
-    end
-
-    context "non-existent menu" do
-      let(:params) { { id: Float::INFINITY } }
-
-      it "returns 404" do
+      it "prevents deleting menus from other restaurants" do
         action.call
         expect(response).to have_http_status(:not_found)
       end

@@ -4,7 +4,7 @@
     <%= menu_item.name %>
   </div>
   <div>
-    <strong class="block font-medium mb-1">Price in cents:</strong>
-    <%= menu_item.price_in_cents %>
+    <strong class="block font-medium mb-1">Price:</strong>
+    $<%= '%.2f' % (menu_item.price_in_cents / 100.0) %>
   </div>
 </div>

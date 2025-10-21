@@ -1,4 +1,4 @@
-<%= form_with(model: [menu_item.menu, menu_item], class: "contents") do |form| %>
+<%= form_with(model: menu_item, url: restaurant_menu_menu_items_path(@restaurant, @menu), class: "contents") do |form| %>
   <% if menu_item.errors.any? %>
     <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
       <h2><%= pluralize(menu_item.errors.count, "error") %> prohibited this menu_item from being saved:</h2>
@@ -13,15 +13,16 @@
 
   <div class="my-5">
     <%= form.label :name %>
-    <%= form.text_field :name, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": menu_item.errors[:name].none?, "border-red-400 focus:outline-red-600": menu_item.errors[:name].any?}] %>
+    <%= form.text_field :name, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": menu_item.errors[:name].none?, "border-red-400 focus:outline-red-600": menu_item.errors[:name].any?}], placeholder: "Enter item name (existing items will be reused)" %>
+    <p class="text-sm text-gray-600 mt-1">If an item with this name exists, it will be added to this menu</p>
   </div>
 
   <div class="my-5">
-    <%= form.label :price_in_cents %>
-    <%= form.number_field :price_in_cents, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": menu_item.errors[:price_in_cents].none?, "border-red-400 focus:outline-red-600": menu_item.errors[:price_in_cents].any?}] %>
+    <%= form.label :price_in_cents, "Price (in cents)" %>
+    <%= form.number_field :price_in_cents, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": menu_item.errors[:price_in_cents].none?, "border-red-400 focus:outline-red-600": menu_item.errors[:price_in_cents].any?}], placeholder: "e.g., 1299 for $12.99" %>
   </div>
 
   <div class="inline">
-    <%= form.submit class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer" %>
+    <%= form.submit "Add to Menu", class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer" %>
   </div>
 <% end %>
