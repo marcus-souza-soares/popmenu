@@ -252,5 +252,4 @@ RSpec.describe MenusController, type: :controller do
       end
     end
   end
-
 end

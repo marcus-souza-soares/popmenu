@@ -6,6 +6,6 @@ class CreateMenuAssignments < ActiveRecord::Migration[8.0]
 
       t.timestamps
     end
-    add_index :menu_assignments, [:menu_id, :menu_item_id], unique: true
+    add_index :menu_assignments, [ :menu_id, :menu_item_id ], unique: true
   end
 end
