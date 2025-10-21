@@ -1,32 +1,33 @@
 class MenusController < ApplicationController
+  before_action :set_restaurant
   before_action :set_menu, only: %i[ show edit update destroy ]
 
-  # GET /menus or /menus.json
+  # GET /restaurants/:restaurant_id/menus or /restaurants/:restaurant_id/menus.json
   def index
-    @menus = Menu.all
+    @menus = @restaurant.menus
   end
 
-  # GET /menus/1 or /menus/1.json
+  # GET /restaurants/:restaurant_id/menus/1 or /restaurants/:restaurant_id/menus/1.json
   def show
   end
 
-  # GET /menus/new
+  # GET /restaurants/:restaurant_id/menus/new
   def new
-    @menu = Menu.new
+    @menu = @restaurant.menus.build
   end
 
-  # GET /menus/1/edit
+  # GET /restaurants/:restaurant_id/menus/1/edit
   def edit
   end
 
-  # POST /menus or /menus.json
+  # POST /restaurants/:restaurant_id/menus or /restaurants/:restaurant_id/menus.json
   def create
-    @menu = Menu.new(menu_params)
+    @menu = @restaurant.menus.build(menu_params)
 
     respond_to do |format|
       if @menu.save
-        format.html { redirect_to @menu, notice: "Menu was successfully created." }
-        format.json { render :show, status: :created, location: @menu }
+        format.html { redirect_to restaurant_menu_path(@restaurant, @menu), notice: "Menu was successfully created." }
+        format.json { render :show, status: :created, location: restaurant_menu_path(@restaurant, @menu) }
       else
         format.html { render :new, status: :unprocessable_entity }
         format.json { render json: @menu.errors, status: :unprocessable_entity }
@@ -34,11 +35,12 @@ class MenusController < ApplicationController
     end
   end
 
+  # PATCH/PUT /restaurants/:restaurant_id/menus/1 or /restaurants/:restaurant_id/menus/1.json
   def update
     respond_to do |format|
       if @menu.update(menu_params)
-        format.html { redirect_to @menu, notice: "Menu was successfully updated.", status: :see_other }
-        format.json { render :show, status: :ok, location: @menu }
+        format.html { redirect_to restaurant_menu_path(@restaurant, @menu), notice: "Menu was successfully updated.", status: :see_other }
+        format.json { render :show, status: :ok, location: restaurant_menu_path(@restaurant, @menu) }
       else
         format.html { render :edit, status: :unprocessable_entity }
         format.json { render json: @menu.errors, status: :unprocessable_entity }
@@ -46,33 +48,47 @@ class MenusController < ApplicationController
     end
   end
 
+  # DELETE /restaurants/:restaurant_id/menus/1 or /restaurants/:restaurant_id/menus/1.json
   def destroy
     if @menu.destroy
       respond_to do |format|
-        format.html { redirect_to menus_path, notice: "Menu was successfully destroyed.", status: :see_other }
+        format.html { redirect_to restaurant_menus_path(@restaurant), notice: "Menu was successfully destroyed.", status: :see_other }
         format.json { head :no_content }
       end
     else
       respond_to do |format|
-        format.html { redirect_to menus_path, alert: "Menu was not destroyed.", status: :unprocessable_entity }
+        format.html { redirect_to restaurant_menus_path(@restaurant), alert: "Menu was not destroyed.", status: :unprocessable_entity }
         format.json { render json: @menu.errors, status: :unprocessable_entity }
       end
     end
   end
 
   private
-    def set_menu
-      @menu = Menu.find_by(id: params.expect(:id))
+    # Set the parent restaurant
+    def set_restaurant
+      @restaurant = Restaurant.find_by(id: params.expect(:restaurant_id))
 
-      if @menu.blank?
-        if request.format.json?
-          render json: { error: "Menu not found" }, status: :not_found
-        else
-          redirect_to menus_path, alert: "Menu not found", status: :not_found
+      if @restaurant.blank?
+        respond_to do |format|
+          format.html { redirect_to restaurants_path, alert: "Restaurant not found.", status: :not_found }
+          format.json { render json: { error: "Restaurant not found" }, status: :not_found }
         end
       end
     end
 
+    # Use callbacks to share common setup or constraints between actions.
+    def set_menu
+      @menu = @restaurant.menus.find_by(id: params.expect(:id))
+
+      if @menu.blank?
+        respond_to do |format|
+          format.html { redirect_to restaurant_menus_path(@restaurant), alert: "Menu not found.", status: :not_found }
+          format.json { render json: { error: "Menu not found" }, status: :not_found }
+        end
+      end
+    end
+
+    # Only allow a list of trusted parameters through.
     def menu_params
       params.expect(menu: [ :name ])
     end

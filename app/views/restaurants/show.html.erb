@@ -1,0 +1,42 @@
+<% content_for :title, @restaurant.name %>
+
+<div class="w-full">
+  <% if notice.present? %>
+    <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-md inline-block" id="notice"><%= notice %></p>
+  <% end %>
+
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="font-bold text-4xl"><%= @restaurant.name %></h1>
+    <div class="flex space-x-2">
+      <%= link_to "Edit", edit_restaurant_path(@restaurant), class: "rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 font-medium" %>
+      <%= button_to "Delete", restaurant_path(@restaurant), method: :delete, class: "rounded-md px-3.5 py-2.5 text-white bg-red-600 hover:bg-red-500 font-medium cursor-pointer", data: { turbo_confirm: "Are you sure?" } %>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+    <h2 class="text-2xl font-bold mb-4">Menus</h2>
+    
+    <% if @restaurant.menus.any? %>
+      <div class="space-y-4">
+        <% @restaurant.menus.each do |menu| %>
+          <div class="p-4 bg-gray-50 rounded-md flex justify-between items-center">
+            <div>
+              <h3 class="font-bold text-lg"><%= menu.name %></h3>
+              <p class="text-gray-600 text-sm"><%= pluralize(menu.menu_items.count, 'item') %></p>
+            </div>
+            <div class="flex space-x-2">
+              <%= link_to "View Menu", restaurant_menu_path(@restaurant, menu), class: "rounded-md px-3 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium" %>
+              <%= link_to "Menu Items", restaurant_menu_menu_items_path(@restaurant, menu), class: "rounded-md px-3 py-2 bg-green-600 hover:bg-green-500 text-white text-sm font-medium" %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <p class="text-gray-500">No menus yet.</p>
+    <% end %>
+
+    <%= link_to "Add Menu", new_restaurant_menu_path(@restaurant), class: "mt-4 rounded-md px-3.5 py-2.5 bg-green-600 hover:bg-green-500 text-white inline-block font-medium" %>
+  </div>
+
+  <%= link_to "Back to restaurants", restaurants_path, class: "mt-6 rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
+</div>

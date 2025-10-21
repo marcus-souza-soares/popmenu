@@ -1,0 +1,34 @@
+<% content_for :title, "Restaurants" %>
+
+<div class="w-full">
+  <% if notice.present? %>
+    <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-md inline-block" id="notice"><%= notice %></p>
+  <% end %>
+
+  <div class="flex justify-between items-center">
+    <h1 class="font-bold text-4xl">Restaurants</h1>
+    <%= link_to "New restaurant", new_restaurant_path, class: "rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white block font-medium" %>
+  </div>
+
+  <div id="restaurants" class="min-w-full divide-y divide-gray-200 space-y-5 mt-6">
+    <% if @restaurants.any? %>
+      <% @restaurants.each do |restaurant| %>
+        <div class="p-6 bg-white rounded-lg shadow-sm border border-gray-200">
+          <div class="flex justify-between items-start">
+            <div>
+              <h2 class="text-2xl font-bold"><%= restaurant.name %></h2>
+              <p class="text-gray-600 mt-1"><%= pluralize(restaurant.menus.count, 'menu') %></p>
+            </div>
+            <div class="flex space-x-2">
+              <%= link_to "View", restaurant_path(restaurant), class: "rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-medium" %>
+              <%= link_to "Menus", restaurant_menus_path(restaurant), class: "rounded-md px-3.5 py-2.5 bg-green-600 hover:bg-green-500 text-white font-medium" %>
+              <%= button_to "Delete", restaurant_path(restaurant), method: :delete, class: "rounded-md px-3.5 py-2.5 text-white bg-red-600 hover:bg-red-500 font-medium cursor-pointer", data: { turbo_confirm: "Are you sure?" } %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    <% else %>
+      <p class="text-center my-10">No restaurants found.</p>
+    <% end %>
+  </div>
+</div>
