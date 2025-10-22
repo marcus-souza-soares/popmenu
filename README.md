@@ -396,10 +396,6 @@ The seed file creates realistic test data:
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 📝 License
-
-This project is created as part of a coding challenge.
-
 ## 👨‍💻 Author
 
 **Marcus Souza Soares**
@@ -408,7 +404,6 @@ This project is created as part of a coding challenge.
 ## 🙏 Acknowledgments
 
 - Built with Ruby on Rails
-- Inspired by real-world restaurant management systems
 - Created as part of the PopMenu technical challenge
 
 ---

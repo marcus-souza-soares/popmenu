@@ -66,26 +66,12 @@ class MenusController < ApplicationController
   private
     # Set the parent restaurant
     def set_restaurant
-      @restaurant = Restaurant.find_by(id: params.expect(:restaurant_id))
-
-      if @restaurant.blank?
-        respond_to do |format|
-          format.html { redirect_to restaurants_path, alert: "Restaurant not found.", status: :not_found }
-          format.json { render json: { error: "Restaurant not found" }, status: :not_found }
-        end
-      end
+      super(id: params[:restaurant_id])
     end
 
     # Use callbacks to share common setup or constraints between actions.
     def set_menu
-      @menu = @restaurant.menus.find_by(id: params.expect(:id))
-
-      if @menu.blank?
-        respond_to do |format|
-          format.html { redirect_to restaurant_menus_path(@restaurant), alert: "Menu not found.", status: :not_found }
-          format.json { render json: { error: "Menu not found" }, status: :not_found }
-        end
-      end
+      super(id: params[:id])
     end
 
     # Only allow a list of trusted parameters through.

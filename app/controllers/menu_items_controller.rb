@@ -20,19 +20,15 @@ class MenuItemsController < ApplicationController
   def edit; end
 
   # POST /restaurants/:restaurant_id/menus/:menu_id/menu_items or /restaurants/:restaurant_id/menus/:menu_id/menu_items.json
-  # This creates or assigns an existing menu item to the menu
   def create
-    # Try to find existing menu item by name or create new one
     @menu_item = MenuItem.find_or_initialize_by(name: menu_item_params[:name])
 
-    # Update price if provided and item is new or being updated
     if @menu_item.new_record? || menu_item_params[:price_in_cents].present?
       @menu_item.price_in_cents = menu_item_params[:price_in_cents] if menu_item_params[:price_in_cents].present?
     end
 
     respond_to do |format|
       if @menu_item.save
-        # Create the menu assignment if it doesn't exist
         menu_assignment = MenuAssignment.find_or_create_by(menu: @menu, menu_item: @menu_item)
 
         if menu_assignment.persisted?
@@ -50,7 +46,6 @@ class MenuItemsController < ApplicationController
   end
 
   # DELETE /restaurants/:restaurant_id/menus/:menu_id/menu_items/1 or /restaurants/:restaurant_id/menus/:menu_id/menu_items/1.json
-  # This removes the menu item from the menu (but doesn't delete the menu item itself)
   def destroy
     menu_assignment = MenuAssignment.find_by(menu: @menu, menu_item: @menu_item)
 
@@ -70,26 +65,12 @@ class MenuItemsController < ApplicationController
   private
     # Set the parent restaurant
     def set_restaurant
-      @restaurant = Restaurant.find_by(id: params.expect(:restaurant_id))
-
-      if @restaurant.blank?
-        respond_to do |format|
-          format.html { redirect_to restaurants_path, alert: "Restaurant not found.", status: :not_found }
-          format.json { render json: { error: "Restaurant not found" }, status: :not_found }
-        end
-      end
+      super(id: params[:restaurant_id])
     end
 
     # Set the parent menu
     def set_menu
-      @menu = @restaurant.menus.find_by(id: params.expect(:menu_id))
-
-      if @menu.blank?
-        respond_to do |format|
-          format.html { redirect_to restaurant_menus_path(@restaurant), alert: "Menu not found.", status: :not_found }
-          format.json { render json: { error: "Menu not found" }, status: :not_found }
-        end
-      end
+      super(id: params[:menu_id])
     end
 
     def set_menu_item

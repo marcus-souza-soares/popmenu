@@ -65,14 +65,7 @@ class RestaurantsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_restaurant
-      @restaurant = Restaurant.find_by(id: params.expect(:id))
-
-      if @restaurant.blank?
-        respond_to do |format|
-          format.html { redirect_to restaurants_path, alert: "Restaurant not found.", status: :not_found }
-          format.json { render json: { error: "Restaurant not found" }, status: :not_found }
-        end
-      end
+      super(id: params[:id])
     end
 
     # Only allow a list of trusted parameters through.
