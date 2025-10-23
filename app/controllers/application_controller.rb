@@ -1,7 +1,16 @@
 class ApplicationController < ActionController::Base
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
+  RATE_LIMIT_CONFIG = {
+    to: 100,
+    within: 1.minute,
+    store: Rails.cache,
+    by: -> { request.domain },
+    with: -> { render json: { error: "Too many requests on domain!, Please try after some time" }, status: :too_many_requests }
+  }.freeze
+
   allow_browser versions: :modern
   protect_from_forgery with: :null_session, if: -> { request.format.json? }
+  rate_limit **RATE_LIMIT_CONFIG
 
   private
     def set_restaurant(id:)
