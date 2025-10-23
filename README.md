@@ -7,12 +7,13 @@ A comprehensive Ruby on Rails application that provides a RESTful API and web in
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-blue)](https://www.postgresql.org/)
 [![RSpec](https://img.shields.io/badge/Tests-RSpec-green)](https://rspec.info/)
 
-## 📋 Table of Contents
+## Table of Contents
 
 - [Features](#-features)
 - [Architecture](#-architecture)
 - [Getting Started](#-getting-started)
 - [API Documentation](#-api-documentation)
+- [JSON Import](#-json-import)
 - [Database Schema](#-database-schema)
 - [Testing](#-testing)
 - [Development](#-development)
@@ -29,7 +30,7 @@ A comprehensive Ruby on Rails application that provides a RESTful API and web in
 - Nested resource structure for clean URL patterns
 - Menu-specific item management
 
-### 🍔 Intelligent Menu Item Reusability
+### Intelligent Menu Item Reusability
 **The Core Innovation:**
 - **Globally Unique Items**: Menu items are unique by name across the entire system
 - **Zero Duplication**: No duplicate menu items in the database
@@ -64,7 +65,7 @@ POST /restaurants/1/menus/2/menu_items
 - Security tests preventing cross-restaurant access
 - Tests for item reusability and cascade behaviors
 
-## 🏗️ Architecture
+## Architecture
 
 ### Database Relationships
 
@@ -191,6 +192,27 @@ Currently, no authentication is required.
 }
 ```
 
+## 📥 JSON Import
+
+Import restaurant data from JSON files via HTTP endpoint!
+
+### Quick Start
+
+```bash
+# Import the sample data file
+curl -X POST http://localhost:3000/imports/restaurants \
+  -F "file=@restaurant_data.json"
+```
+
+### Features
+
+- **HTTP Endpoint** - POST JSON files to `/imports/restaurants`
+- **Smart Processing** - Uses adapter pattern and Interactor services
+- 📊 **Detailed Logs** - Success/fail status for each restaurant, menu, and item
+- **Error Handling** - Comprehensive validation and exception handling
+- ♻️ **Item Reuse** - Automatically reuses menu items across menus
+
+
 ## 🗄️ Database Schema
 
 ### Key Tables
@@ -312,12 +334,12 @@ The seed file creates realistic test data:
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 👨‍💻 Author
+## Author
 
 **Marcus Souza Soares**
 - GitHub: [@marcus-souza-soares](https://github.com/marcus-souza-soares)
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - Built with Ruby on Rails
 - Created as part of the PopMenu technical challenge

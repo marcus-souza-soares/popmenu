@@ -26,6 +26,8 @@ servers:
     description: Development server
 
 tags:
+  - name: Imports
+    description: Bulk import operations for restaurant data from JSON files
   - name: Restaurants
     description: Restaurant management operations
   - name: Menus
@@ -34,6 +36,115 @@ tags:
     description: Menu item management operations (nested under menus)
 
 paths:
+  /imports/restaurants:
+    post:
+      summary: Import restaurants from JSON
+      description: |
+        Bulk import restaurant data from JSON file or JSON request body.
+        
+        **Features:**
+        - Accepts both `menu_items` and `dishes` keys
+        - Automatically reuses menu items with the same name
+        - Creates or updates restaurants, menus, and menu items
+        - Provides detailed logs and results for each operation
+        - Converts prices from dollars to cents automatically
+        
+        **Import Behavior:**
+        - **Restaurants**: Creates new or reuses existing by name
+        - **Menus**: Creates new menus for restaurants
+        - **Menu Items**: Globally unique by name, reused across menus
+        - **Prices**: Can be updated when reusing items
+      operationId: importRestaurants
+      tags:
+        - Imports
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: JSON file containing restaurant data
+            example:
+              file: "@restaurant_data.json"
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RestaurantImportInput'
+            example:
+              restaurants:
+                - name: "Poppo's Cafe"
+                  menus:
+                    - name: "lunch"
+                      menu_items:
+                        - name: "Burger"
+                          price: 9.00
+                        - name: "Small Salad"
+                          price: 5.00
+      responses:
+        '201':
+          description: Import completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportSuccessResponse'
+              example:
+                success: true
+                message: "Import completed successfully"
+                summary:
+                  restaurants: 2
+                  menus: 3
+                  menu_items: 4
+                  assignments: 5
+                results:
+                  - restaurant_name: "Poppo's Cafe"
+                    restaurant_id: 1
+                    status: "success"
+                    menus:
+                      - menu_name: "lunch"
+                        menu_id: 1
+                        status: "success"
+                        menu_items:
+                          - item_name: "Burger"
+                            menu_item_id: 1
+                            price_in_cents: 900
+                            status: "success"
+                            action: "created"
+                logs:
+                  - level: "info"
+                    message: "Successfully parsed JSON data"
+        '422':
+          description: Validation or parsing error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportErrorResponse'
+              example:
+                success: false
+                message: "Validation failed with 2 error(s)"
+                validation_errors:
+                  - path: "restaurants[0]"
+                    message: "name is required"
+                    severity: "error"
+                logs:
+                  - level: "error"
+                    message: "restaurants[0]: name is required"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportErrorResponse'
+              example:
+                success: false
+                message: "An unexpected error occurred during import"
+                error: "Unexpected error message"
+                logs:
+                  - level: "error"
+                    message: "Unexpected error: Something went wrong"
+
   /restaurants.json:
     get:
       summary: List all restaurants
@@ -735,3 +846,241 @@ components:
               type: string
           example:
             name: ["can't be blank"]
+
+    RestaurantImportInput:
+      type: object
+      description: JSON structure for importing restaurant data
+      properties:
+        restaurants:
+          type: array
+          description: Array of restaurants to import
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                description: Restaurant name
+                example: "Poppo's Cafe"
+              menus:
+                type: array
+                description: Array of menus for this restaurant
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                      description: Menu name
+                      example: "lunch"
+                    menu_items:
+                      type: array
+                      description: Array of menu items (can also use 'dishes' key)
+                      items:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                            description: Item name
+                            example: "Burger"
+                          price:
+                            type: number
+                            format: float
+                            description: Price in dollars (will be converted to cents)
+                            example: 9.00
+                        required:
+                          - name
+                          - price
+                    dishes:
+                      type: array
+                      description: Alternative key for menu items
+                      items:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                            example: "Chicken Wings"
+                          price:
+                            type: number
+                            format: float
+                            example: 9.00
+                  required:
+                    - name
+            required:
+              - name
+              - menus
+      required:
+        - restaurants
+
+    ImportSuccessResponse:
+      type: object
+      description: Successful import response
+      properties:
+        success:
+          type: boolean
+          description: Import success status
+          example: true
+        message:
+          type: string
+          description: Summary message
+          example: "Import completed successfully"
+        summary:
+          type: object
+          description: Summary of created/updated records
+          properties:
+            restaurants:
+              type: integer
+              description: Number of restaurants created
+              example: 2
+            menus:
+              type: integer
+              description: Number of menus created
+              example: 3
+            menu_items:
+              type: integer
+              description: Number of menu items created
+              example: 4
+            assignments:
+              type: integer
+              description: Number of menu-item associations created
+              example: 5
+        results:
+          type: array
+          description: Detailed results for each restaurant
+          items:
+            type: object
+            properties:
+              restaurant_name:
+                type: string
+                example: "Poppo's Cafe"
+              restaurant_id:
+                type: integer
+                example: 1
+              status:
+                type: string
+                enum: [success, failed]
+                example: "success"
+              menus:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    menu_name:
+                      type: string
+                      example: "lunch"
+                    menu_id:
+                      type: integer
+                      example: 1
+                    status:
+                      type: string
+                      enum: [success, failed]
+                      example: "success"
+                    menu_items:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          item_name:
+                            type: string
+                            example: "Burger"
+                          menu_item_id:
+                            type: integer
+                            example: 1
+                          price_in_cents:
+                            type: integer
+                            example: 900
+                          status:
+                            type: string
+                            enum: [success, failed]
+                            example: "success"
+                          action:
+                            type: string
+                            enum: [created, updated, reused]
+                            description: Action taken on the menu item
+                            example: "created"
+                          assignment_id:
+                            type: integer
+                            example: 1
+        logs:
+          type: array
+          description: Detailed log messages from the import process
+          items:
+            type: object
+            properties:
+              level:
+                type: string
+                enum: [info, warn, error]
+                description: Log level
+                example: "info"
+              message:
+                type: string
+                description: Log message
+                example: "Successfully parsed JSON data"
+      required:
+        - success
+        - message
+        - summary
+        - results
+        - logs
+
+    ImportErrorResponse:
+      type: object
+      description: Import error response
+      properties:
+        success:
+          type: boolean
+          description: Import success status
+          example: false
+        message:
+          type: string
+          description: Error message
+          example: "Validation failed with 2 error(s)"
+        validation_errors:
+          type: array
+          description: Validation errors (if validation failed)
+          items:
+            type: object
+            properties:
+              path:
+                type: string
+                description: Path to the field with error
+                example: "restaurants[0]"
+              message:
+                type: string
+                description: Error message
+                example: "name is required"
+              severity:
+                type: string
+                enum: [error, warning]
+                example: "error"
+        adapter_errors:
+          type: array
+          description: Adapter errors (if data transformation failed)
+          items:
+            type: object
+            properties:
+              path:
+                type: string
+                example: "restaurants[0].menus[0]"
+              message:
+                type: string
+                example: "must be an object"
+        error:
+          type: string
+          description: Unexpected error message (for 500 responses)
+          example: "Unexpected error"
+        logs:
+          type: array
+          description: Log messages from the import process
+          items:
+            type: object
+            properties:
+              level:
+                type: string
+                enum: [info, warn, error]
+                example: "error"
+              message:
+                type: string
+                example: "JSON parsing failed"
+      required:
+        - success
+        - message
+        - logs
