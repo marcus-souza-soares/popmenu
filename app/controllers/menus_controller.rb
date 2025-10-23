@@ -2,25 +2,20 @@ class MenusController < ApplicationController
   before_action :set_restaurant
   before_action :set_menu, only: %i[ show edit update destroy ]
 
-  # GET /restaurants/:restaurant_id/menus or /restaurants/:restaurant_id/menus.json
   def index
     @menus = @restaurant.menus
   end
 
-  # GET /restaurants/:restaurant_id/menus/1 or /restaurants/:restaurant_id/menus/1.json
   def show
   end
 
-  # GET /restaurants/:restaurant_id/menus/new
   def new
     @menu = @restaurant.menus.build
   end
 
-  # GET /restaurants/:restaurant_id/menus/1/edit
   def edit
   end
 
-  # POST /restaurants/:restaurant_id/menus or /restaurants/:restaurant_id/menus.json
   def create
     @menu = @restaurant.menus.build(menu_params)
 
@@ -35,8 +30,6 @@ class MenusController < ApplicationController
     end
   end
 
-  # PATCH/PUT /restaurants/:restaurant_id/menus/1 or /restaurants/:restaurant_id/menus/1.json
-  def update
     respond_to do |format|
       if @menu.update(menu_params)
         format.html { redirect_to restaurant_menu_path(@restaurant, @menu), notice: "Menu was successfully updated.", status: :see_other }
@@ -48,7 +41,6 @@ class MenusController < ApplicationController
     end
   end
 
-  # DELETE /restaurants/:restaurant_id/menus/1 or /restaurants/:restaurant_id/menus/1.json
   def destroy
     if @menu.destroy
       respond_to do |format|
@@ -64,17 +56,14 @@ class MenusController < ApplicationController
   end
 
   private
-    # Set the parent restaurant
     def set_restaurant
       super(id: params[:restaurant_id])
     end
 
-    # Use callbacks to share common setup or constraints between actions.
     def set_menu
       super(id: params[:id])
     end
 
-    # Only allow a list of trusted parameters through.
     def menu_params
       params.expect(menu: [ :name ])
     end

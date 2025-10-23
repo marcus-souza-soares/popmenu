@@ -34,49 +34,32 @@ echo -e "${GREEN}✅ Docker and Docker Compose are installed${NC}"
 echo ""
 
 # Stop any running containers
-echo -e "${YELLOW}🛑 Stopping any running containers...${NC}"
+echo -e "${YELLOW} Stopping any running containers...${NC}"
 docker compose down || true
 echo ""
 
 # Build the Docker images
-echo -e "${YELLOW}🔨 Building Docker images...${NC}"
+echo -e "${YELLOW} Building Docker images...${NC}"
 docker compose build
 echo -e "${GREEN}✅ Docker images built successfully${NC}"
 echo ""
 
 # Create the database
-echo -e "${YELLOW}🗄️  Creating database...${NC}"
+echo -e "${YELLOW}  Creating database...${NC}"
 docker compose run --rm app bin/rails db:create
 echo -e "${GREEN}✅ Database created${NC}"
 echo ""
 
 # Run migrations
-echo -e "${YELLOW}📊 Running database migrations...${NC}"
+echo -e "${YELLOW} Running database migrations...${NC}"
 docker compose run --rm app bin/rails db:migrate
 echo -e "${GREEN}✅ Migrations completed${NC}"
 echo ""
 
 # Seed the database
-echo -e "${YELLOW}🌱 Seeding database with sample data...${NC}"
+echo -e "${YELLOW} Seeding database with sample data...${NC}"
 docker compose run --rm app bin/rails db:seed
 echo -e "${GREEN}✅ Database seeded${NC}"
-echo ""
-
-# Run RuboCop to check code style
-echo -e "${YELLOW}🔍 Running RuboCop...${NC}"
-docker compose run --rm app bin/rubocop
-echo -e "${GREEN}✅ RuboCop check passed${NC}"
-echo ""
-
-# Run tests
-echo -e "${YELLOW}🧪 Running test suite...${NC}"
-docker compose run --rm app rspec
-if [ $? -eq 0 ]; then
-    echo -e "${GREEN}✅ All tests passed${NC}"
-else
-    echo -e "${RED}❌ Some tests failed${NC}"
-    echo -e "${YELLOW}You can still continue, but you may want to check the failures.${NC}"
-fi
 echo ""
 
 echo -e "${GREEN}╔═══════════════════════════════════════════════════════════╗${NC}"
@@ -105,6 +88,6 @@ echo ""
 echo -e "  6. Access Rails console:"
 echo -e "     ${YELLOW}docker compose run --rm app bin/rails console${NC}"
 echo ""
-echo -e "${BLUE}📚 For more information, check the README.md file${NC}"
+echo -e "${BLUE} For more information, check the README.md file${NC}"
 echo ""
 

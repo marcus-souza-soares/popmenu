@@ -3,7 +3,6 @@ class MenuItemsController < ApplicationController
   before_action :set_menu
   before_action :set_menu_item, only: %i[ show destroy ]
 
-  # GET /restaurants/:restaurant_id/menus/:menu_id/menu_items or /restaurats/:restaurant_id/menus/:menu_id/menu_items.json
   def index
     @menu_items = @menu.menu_items
   end
@@ -11,15 +10,12 @@ class MenuItemsController < ApplicationController
   def show
   end
 
-  # GET /restaurants/:restaurant_id/menus/:menu_id/menu_items/new
   def new
     @menu_item = MenuItem.new
   end
 
-  # GET /restaurants/:restaurant_id/menus/:menu_id/menu_items/1/edit
   def edit; end
 
-  # POST /restaurants/:restaurant_id/menus/:menu_id/menu_items or /restaurants/:restaurant_id/menus/:menu_id/menu_items.json
   def create
     @menu_item = MenuItem.find_or_initialize_by(name: menu_item_params[:name])
 
@@ -45,7 +41,6 @@ class MenuItemsController < ApplicationController
     end
   end
 
-  # DELETE /restaurants/:restaurant_id/menus/:menu_id/menu_items/1 or /restaurants/:restaurant_id/menus/:menu_id/menu_items/1.json
   def destroy
     menu_assignment = MenuAssignment.find_by(menu: @menu, menu_item: @menu_item)
 
@@ -63,12 +58,10 @@ class MenuItemsController < ApplicationController
   end
 
   private
-    # Set the parent restaurant
     def set_restaurant
       super(id: params[:restaurant_id])
     end
 
-    # Set the parent menu
     def set_menu
       super(id: params[:menu_id])
     end

@@ -1,17 +1,6 @@
-# Interactor to import restaurant data into the database
-# Creates or updates restaurants, menus, and menu items with proper associations
 class ImportRestaurantData
   include Interactor
 
-  # Expected context inputs:
-  #   - adapted_data: Array (normalized restaurant data)
-  #
-  # Context outputs:
-  #   - import_results: Array (results for each restaurant/menu/item)
-  #   - total_restaurants: Integer
-  #   - total_menus: Integer
-  #   - total_menu_items: Integer
-  #   - total_assignments: Integer
   def call
     initialize_counters
     context.import_results = []
