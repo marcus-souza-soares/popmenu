@@ -172,7 +172,7 @@ RSpec.describe RestaurantJsonAdapter do
     end
 
     context "with invalid data structures" do
-      let(:adapter) { described_class.new("not a hash")}
+      let(:adapter) { described_class.new("not a hash") }
 
       it "handles non-hash input" do
         expect(result).to eq([])

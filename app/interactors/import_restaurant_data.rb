@@ -31,7 +31,7 @@ class ImportRestaurantData
   rescue StandardError => e
     context.fail!(
       message: "Import failed: #{e.message}",
-      logs: [{ level: :error, message: "Unexpected error during import: #{e.message}\n#{e.backtrace.first(5).join("\n")}" }]
+      logs: [ { level: :error, message: "Unexpected error during import: #{e.message}\n#{e.backtrace.first(5).join("\n")}" } ]
     )
   end
 
@@ -66,7 +66,7 @@ class ImportRestaurantData
     context.import_results << restaurant_result
   rescue StandardError => e
     restaurant_result[:status] = :failed
-    restaurant_result[:errors] = [e.message]
+    restaurant_result[:errors] = [ e.message ]
     context.import_results << restaurant_result
 
     context.logs << {
@@ -108,7 +108,7 @@ class ImportRestaurantData
     menu_result
   rescue StandardError => e
     menu_result[:status] = :failed
-    menu_result[:errors] = [e.message]
+    menu_result[:errors] = [ e.message ]
     context.logs << {
       level: :error,
       message: "Failed to import menu '#{menu_data[:name]}': #{e.message}"
@@ -181,7 +181,7 @@ class ImportRestaurantData
     item_result
   rescue StandardError => e
     item_result[:status] = :failed
-    item_result[:errors] = [e.message]
+    item_result[:errors] = [ e.message ]
     context.logs << {
       level: :error,
       message: "Failed to import menu item '#{item_data[:name]}': #{e.message}"

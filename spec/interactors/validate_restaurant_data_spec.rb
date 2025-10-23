@@ -22,7 +22,6 @@ RSpec.describe ValidateRestaurantData do
     end
 
     context "with valid data" do
-
       it "successfully validates the data" do
         expect(result).to be_success
         expect(result.validation_errors).to eq([])

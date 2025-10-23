@@ -30,6 +30,7 @@ class MenusController < ApplicationController
     end
   end
 
+  def update
     respond_to do |format|
       if @menu.update(menu_params)
         format.html { redirect_to restaurant_menu_path(@restaurant, @menu), notice: "Menu was successfully updated.", status: :see_other }

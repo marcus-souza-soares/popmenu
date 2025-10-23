@@ -1,5 +1,4 @@
 class ImportsController < ApplicationController
-
   rescue_from StandardError, with: :handle_standard_error
 
   def create
@@ -9,7 +8,7 @@ class ImportsController < ApplicationController
       return render json: {
         success: false,
         message: "No JSON content provided. Please upload a JSON file or send JSON in the request body.",
-        logs: [{ level: :error, message: "No JSON content found in request" }]
+        logs: [ { level: :error, message: "No JSON content found in request" } ]
       }, status: :unprocessable_entity
     end
 

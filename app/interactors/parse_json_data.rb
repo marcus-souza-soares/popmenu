@@ -15,7 +15,7 @@ class ParseJsonData
 
     context.fail!(
       message: "JSON content is required",
-      logs: [{ level: :error, message: "No JSON content provided for parsing" }]
+      logs: [ { level: :error, message: "No JSON content provided for parsing" } ]
     )
   end
 
@@ -26,7 +26,7 @@ class ParseJsonData
   rescue JSON::ParserError => e
     context.fail!(
       message: "Invalid JSON format: #{e.message}",
-      logs: [{ level: :error, message: "JSON parsing failed: #{e.message}" }]
+      logs: [ { level: :error, message: "JSON parsing failed: #{e.message}" } ]
     )
   end
 

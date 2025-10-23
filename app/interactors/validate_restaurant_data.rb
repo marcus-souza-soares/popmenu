@@ -22,7 +22,7 @@ class ValidateRestaurantData
     unless context.adapted_data.is_a?(Array)
       context.fail!(
         message: "Invalid data structure: expected array of restaurants",
-        logs: [{ level: :error, message: "Adapted data is not an array" }]
+        logs: [ { level: :error, message: "Adapted data is not an array" } ]
       )
       return
     end
@@ -30,7 +30,7 @@ class ValidateRestaurantData
     if context.adapted_data.empty?
       context.fail!(
         message: "No restaurants found in data",
-        logs: [{ level: :error, message: "Adapted data array is empty" }]
+        logs: [ { level: :error, message: "Adapted data array is empty" } ]
       )
     end
   end
