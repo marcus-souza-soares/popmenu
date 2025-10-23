@@ -145,9 +145,25 @@ docker compose up
 ### Accessing the Application
 
 - **Web Interface**: http://localhost:3000
+- **API Documentation (Swagger UI)**: http://localhost:3000/api-docs/
+- **OpenAPI Specification**: http://localhost:3000/api-docs/openapi.yaml
 - **API Endpoint**: http://localhost:3000/restaurants.json
+- **Health Check**: http://localhost:3000/up
 
 ## 📡 API Documentation
+
+### Interactive API Documentation
+
+The API includes **interactive Swagger UI documentation** where you can:
+- 📖 Browse all available endpoints
+- 🧪 Try out API calls directly from the browser
+- 📋 See request/response examples
+- 📥 Download the OpenAPI specification
+
+**Access Swagger UI**: http://localhost:3000/api-docs/
+
+The complete OpenAPI 3.1 specification is available at:
+- YAML: http://localhost:3000/api-docs/openapi.yaml
 
 ### Base URL
 ```
@@ -157,106 +173,6 @@ http://localhost:3000
 ### Authentication
 Currently, no authentication is required.
 
-### Endpoints
-
-#### Restaurants
-
-```http
-GET    /restaurants              # List all restaurants
-POST   /restaurants              # Create a restaurant
-GET    /restaurants/:id          # Show a restaurant
-PUT    /restaurants/:id          # Update a restaurant
-DELETE /restaurants/:id          # Delete a restaurant
-```
-
-**Example Request:**
-```bash
-# Get all restaurants
-curl http://localhost:3000/restaurants.json
-
-# Create a restaurant
-curl -X POST http://localhost:3000/restaurants.json \
-  -H "Content-Type: application/json" \
-  -d '{"restaurant": {"name": "My Restaurant"}}'
-```
-
-**Example Response:**
-```json
-{
-  "id": 1,
-  "name": "Tasty Bites",
-  "url": "http://localhost:3000/restaurants/1.json",
-  "menus": [
-    {
-      "id": 1,
-      "name": "Breakfast Menu",
-      "url": "http://localhost:3000/restaurants/1/menus/1.json"
-    }
-  ],
-  "created_at": "2024-10-21T12:00:00.000Z",
-  "updated_at": "2024-10-21T12:00:00.000Z"
-}
-```
-
-#### Menus
-
-```http
-GET    /restaurants/:restaurant_id/menus              # List menus
-POST   /restaurants/:restaurant_id/menus              # Create a menu
-GET    /restaurants/:restaurant_id/menus/:id          # Show a menu
-PUT    /restaurants/:restaurant_id/menus/:id          # Update a menu
-DELETE /restaurants/:restaurant_id/menus/:id          # Delete a menu
-```
-
-**Example Request:**
-```bash
-# Get all menus for a restaurant
-curl http://localhost:3000/restaurants/1/menus.json
-
-# Create a menu
-curl -X POST http://localhost:3000/restaurants/1/menus.json \
-  -H "Content-Type: application/json" \
-  -d '{"menu": {"name": "Lunch Menu"}}'
-```
-
-**Example Response:**
-```json
-{
-  "id": 1,
-  "name": "Breakfast Menu",
-  "url": "http://localhost:3000/restaurants/1/menus/1.json",
-  "menu_items": [
-    {
-      "id": 1,
-      "name": "Pancakes",
-      "price_in_cents": 899,
-      "url": "http://localhost:3000/restaurants/1/menus/1/menu_items/1.json"
-    }
-  ],
-  "created_at": "2024-10-21T12:00:00.000Z",
-  "updated_at": "2024-10-21T12:00:00.000Z"
-}
-```
-
-#### Menu Items
-
-```http
-GET    /restaurants/:restaurant_id/menus/:menu_id/menu_items              # List menu items
-POST   /restaurants/:restaurant_id/menus/:menu_id/menu_items              # Add item to menu
-GET    /restaurants/:restaurant_id/menus/:menu_id/menu_items/:id          # Show a menu item
-DELETE /restaurants/:restaurant_id/menus/:menu_id/menu_items/:id          # Remove from menu
-```
-
-**Example Request:**
-```bash
-# Add a new menu item
-curl -X POST http://localhost:3000/restaurants/1/menus/1/menu_items.json \
-  -H "Content-Type: application/json" \
-  -d '{"menu_item": {"name": "Pancakes", "price_in_cents": 899}}'
-
-# Remove item from menu (doesn't delete the item itself)
-curl -X DELETE http://localhost:3000/restaurants/1/menus/1/menu_items/1.json
-```
 
 ### HTTP Status Codes
 

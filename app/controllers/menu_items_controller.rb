@@ -6,9 +6,6 @@ class MenuItemsController < ApplicationController
   # GET /restaurants/:restaurant_id/menus/:menu_id/menu_items or /restaurats/:restaurant_id/menus/:menu_id/menu_items.json
   def index
     @menu_items = @menu.menu_items
-    @restaurant = Menu.all do |menu|
-      menu.menu_items
-    end
   end
 
   def show
