@@ -8,6 +8,8 @@ Rails.application.routes.draw do
     end
   end
 
+  mount Sidekiq::Web => "/sidekiq"
+
   root "restaurants#index"
   get "up" => "rails/health#show", as: :rails_health_check
 end
